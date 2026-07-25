@@ -8,17 +8,13 @@ use Slim\Factory\AppFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+$container = Dependencies::createContainer();
+AppFactory::setContainer($container);
+
 $app = AppFactory::create();
 
-$displayErrors = true;
+$app->addErrorMiddleware(true, true, true);
 
-$app->addErrorMiddleware(
-    $displayErrors,
-    true,
-    true
-);
-
-Dependencies::register($app);
 Routes::register($app);
 
 $app->run();

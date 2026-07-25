@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Bootstrap;
 
-use Slim\App;
+use DI\ContainerBuilder;
+use Psr\Container\ContainerInterface;
 
 class Dependencies
 {
-    public static function register(App $app): void
+    public static function createContainer(): ContainerInterface
     {
-        // Register application dependencies here.
+        $builder = new ContainerBuilder();
+
+        $builder->useAutowiring(true);
+        return $builder->build();
     }
 }
