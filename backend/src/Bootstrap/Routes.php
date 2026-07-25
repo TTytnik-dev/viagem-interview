@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Bootstrap;
 
 use App\Controller\HealthController;
+use App\Controller\ParcelController;
 use Slim\App;
 
 class Routes
@@ -15,6 +16,10 @@ class Routes
         $app->get(
             '/api/health',
             [HealthController::class, 'index']
+        );
+        $app->get(
+            '/api/parcels',
+            [ParcelController::class, 'index']
         );
     }
 }
