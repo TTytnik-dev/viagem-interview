@@ -14,7 +14,7 @@ class Routes
 
         $app->get(
             '/api/health',
-            HealthController::class . ':index'
+            [HealthController::class, 'index']
         );
     }
 }
