@@ -81,10 +81,16 @@ try {
         $props = $feature['properties'] ?? [];
         $geometry = $feature['geometry'] ?? null;
 
-        $id = $props['id'] ?? $props['inspireid_identifier_localid'] ?? null;
+        $id = $props['gml_id'] ?? $props['localId'] ?? $props['id'] ?? null;
         $parcelNumber = $props['label'] ?? null;
+        
         $cadastralArea = $props['zoning_title'] ?? null;
-        $area = isset($props['areavalue']) ? (float) $props['areavalue'] : null;
+        if (!$cadastralArea && isset($props['nationalCadastralReference'])) {
+            $parts = explode('-', (string)$props['nationalCadastralReference']);
+            $cadastralArea = $parts[0];
+        }
+        
+        $area = $props['areaValue'] ?? (isset($props['areavalue']) ? (float) $props['areavalue'] : null);
 
         if (
             !$id ||

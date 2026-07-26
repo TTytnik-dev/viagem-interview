@@ -38,6 +38,7 @@ final class ParcelService
                     ? json_decode($parcel['geometry'], true, 512, JSON_THROW_ON_ERROR)
                     : null,
                 'properties' => [
+                    'id' => $parcel['id'],
                     'parcel_number' => $parcel['parcel_number'],
                     'cadastral_area' => $parcel['cadastral_area'],
                     'area' => (float) $parcel['area'],
