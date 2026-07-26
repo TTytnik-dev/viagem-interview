@@ -10,6 +10,7 @@ use Psr\Container\ContainerInterface;
 use App\Database\Database;
 use App\Repository\ParcelRepository;
 use App\Service\ParcelService;
+use Slim\App;
 
 class Dependencies
 {
@@ -27,5 +28,18 @@ class Dependencies
         ]);
 
         return $builder->build();
+    }
+
+    public static function registerMiddleware(App $app): void
+    {
+        $app->addBodyParsingMiddleware();
+
+        $app->add(function ($request, $handler) {
+            $response = $handler->handle($request);
+            return $response
+                ->withHeader('Access-Control-Allow-Origin', '*')
+                ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+                ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+        });
     }
 }

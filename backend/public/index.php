@@ -15,6 +15,8 @@ $app = AppFactory::create();
 
 $app->addErrorMiddleware(true, true, true);
 
+Dependencies::registerMiddleware($app);
+
 Routes::register($app);
 
 $app->run();
