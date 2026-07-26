@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import type { Map as MaplibreMap } from 'maplibre-gl';
 import { searchParcels } from '../../api/parcelApi';
-import { highlightAndPopupParcel } from '../../map/mapLayers';
 import { calculateBoundingBox } from '../../utils/geoUtils';
+import { setSelectedParcelId } from '../../map/parcelSelection';
+import { showParcelPopup } from '../../map/parcelPopup';
 import styles from './SearchForm.module.css';
 
 interface SearchFormProps {
@@ -34,7 +35,8 @@ export function SearchForm({ mapInstance }: SearchFormProps) {
                         });
                         
                         setTimeout(() => {
-                            highlightAndPopupParcel(mapInstance, feature, [bbox.centerX, bbox.centerY]);
+                            setSelectedParcelId(mapInstance, feature.id as string | number);
+                            showParcelPopup(mapInstance, feature, [bbox.centerX, bbox.centerY]);
                         }, 500);
                     }
                 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useParcels } from '../hooks/useParcels';
-import { addParcelsLayer } from '../map/mapLayers';
+import { addParcelsLayer } from '../map/parcelLayers';
 import { useMap } from '../hooks/useMap';
 import { SearchForm } from './SearchForm/SearchForm';
 
