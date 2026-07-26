@@ -34,6 +34,12 @@ export function useParcels(currentMap: MaplibreMap | null) {
 
     currentMap.on('moveend', handleMoveEnd);
 
+    if (currentMap.isStyleLoaded()) {
+        handleMoveEnd();
+    } else {
+        currentMap.once('load', handleMoveEnd);
+    }
+
     return () => {
       currentMap.off('moveend', handleMoveEnd);
     };

@@ -52,4 +52,31 @@ final class ParcelService
             'features' => $features,
         ];
     }
+
+    public function searchParcelsAsGeoJson(string $query): array
+    {
+        $parcels = $this->parcelRepository->searchByParcelNumber($query);
+
+        $features = array_map(
+            static fn(array $parcel): array => [
+                'type' => 'Feature',
+                'id' => $parcel['id'],
+                'geometry' => $parcel['geometry']
+                    ? json_decode($parcel['geometry'], true, 512, JSON_THROW_ON_ERROR)
+                    : null,
+                'properties' => [
+                    'id' => $parcel['id'],
+                    'parcel_number' => $parcel['parcel_number'],
+                    'cadastral_area' => $parcel['cadastral_area'],
+                    'area' => (float) $parcel['area'],
+                ],
+            ],
+            $parcels
+        );
+
+        return [
+            'type' => 'FeatureCollection',
+            'features' => $features,
+        ];
+    }
 }

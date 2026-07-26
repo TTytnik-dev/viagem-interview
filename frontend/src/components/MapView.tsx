@@ -1,49 +1,36 @@
-import { useEffect, useRef, useState } from 'react';
-import { Map as MaplibreMap } from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
+import { useEffect, useRef } from 'react';
 import { useParcels } from '../hooks/useParcels';
 import { addParcelsLayer } from '../map/mapLayers';
+import { useMap } from '../hooks/useMap';
+import { SearchForm } from './SearchForm/SearchForm';
 
 export function MapView() {
   const mapContainer = useRef<HTMLDivElement | null>(null);
-  const map = useRef<MaplibreMap | null>(null);
-  const [mapInstance, setMapInstance] = useState<MaplibreMap | null>(null);
+  
+  const { mapInstance } = useMap(mapContainer, {
+    center: [15.35, 50.43],
+    zoom: 15,
+    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
+  });
+  
   const parcels = useParcels(mapInstance);
 
   useEffect(() => {
-    if (map.current || !mapContainer.current) return;
+    if (!mapInstance || !parcels) return;
 
-    map.current = new MaplibreMap({
-      container: mapContainer.current,
-      style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
-      center: [15.35, 50.43],
-      zoom: 15,
-    });
-
-    setMapInstance(map.current);
-
-    return () => {
-      map.current?.remove();
-      map.current = null;
-    };
-  }, []);
-
-  useEffect(() => {
-    const currentMap = mapInstance;
-    if (!currentMap || !parcels) return;
-
-    if (!currentMap.isStyleLoaded()) {
-      currentMap.on('load', () => {
-        addParcelsLayer(currentMap, parcels);
+    if (!mapInstance.isStyleLoaded()) {
+      mapInstance.on('load', () => {
+        addParcelsLayer(mapInstance, parcels);
       });
     } else {
-      addParcelsLayer(currentMap, parcels);
+      addParcelsLayer(mapInstance, parcels);
     }
   }, [parcels, mapInstance]);
 
   return (
-    <div className="app">
-      <div ref={mapContainer} className="map" />
+    <div className="app" style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+      <div ref={mapContainer} className="map" style={{ width: '100%', height: '100%' }} />
+      <SearchForm mapInstance={mapInstance} />
     </div>
   );
 }

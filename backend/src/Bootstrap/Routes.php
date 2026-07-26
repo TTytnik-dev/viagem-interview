@@ -21,5 +21,9 @@ class Routes
             '/api/parcels',
             [ParcelController::class, 'index']
         );
+        $app->get(
+            '/api/parcels/search',
+            [ParcelController::class, 'search']
+        );
     }
 }

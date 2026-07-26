@@ -56,4 +56,19 @@ final class ParcelRepository
 
         return $stmt->fetchAll();
     }
+
+    public function searchByParcelNumber(string $query): array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT id, parcel_number, cadastral_area, area, min_x, max_x, min_y, max_y, geometry
+             FROM parcels
+             WHERE parcel_number LIKE :query
+             ORDER BY parcel_number, cadastral_area
+             LIMIT 10'
+        );
+
+        $stmt->execute(['query' => $query . '%']);
+
+        return $stmt->fetchAll();
+    }
 }

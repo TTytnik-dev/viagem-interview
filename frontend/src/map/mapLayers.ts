@@ -112,3 +112,55 @@ export function addParcelsLayer(currentMap: MaplibreMap, data: FeatureCollection
     currentMap.on('mouseleave', 'parcels-fill', () => currentMap.getCanvas().style.cursor = '');
   }
 }
+
+export function highlightAndPopupParcel(currentMap: MaplibreMap, feature: GeoJSON.Feature, lngLat: [number, number] | {lng: number, lat: number}) {
+  const clickedParcelId = feature.id as string | number;
+  
+  if (currentMap.getSource('parcels-source')) {
+    if (selectedParcelId !== null) {
+      currentMap.setFeatureState(
+        { source: 'parcels-source', id: selectedParcelId },
+        { selected: false }
+      );
+    }
+  }
+
+  selectedParcelId = clickedParcelId;
+  
+  if (currentMap.getSource('parcels-source')) {
+    currentMap.setFeatureState(
+      { source: 'parcels-source', id: selectedParcelId },
+      { selected: true }
+    );
+  }
+
+  const properties = feature.properties as {
+    parcel_number: string;
+    cadastral_area: string;
+    area: number;
+  };
+
+  const html = `
+    <div style="padding: 5px; font-family: sans-serif; font-size: 14px;">
+      <h3 style="margin: 0 0 5px 0;">Parcela: ${properties.parcel_number}</h3>
+      <p style="margin: 2px 0;">Katastr: ${properties.cadastral_area}</p>
+      <p style="margin: 2px 0;">Výměra: ${properties.area} m²</p>
+    </div>
+  `;
+
+  new Popup({ closeButton: true, closeOnClick: true })
+    .setLngLat(lngLat)
+    .setHTML(html)
+    .addTo(currentMap)
+    .on('close', () => {
+      if (selectedParcelId === clickedParcelId) {
+        if (currentMap.getSource('parcels-source')) {
+          currentMap.setFeatureState(
+            { source: 'parcels-source', id: selectedParcelId },
+            { selected: false }
+          );
+        }
+        selectedParcelId = null;
+      }
+    });
+}

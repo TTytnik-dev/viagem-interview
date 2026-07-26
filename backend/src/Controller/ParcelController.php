@@ -45,6 +45,27 @@ final class ParcelController
         return $this->jsonResponse($response, $geoJson);
     }
 
+    /**
+     * @throws JsonException
+     */
+    public function search(Request $request, Response $response): Response
+    {
+        $queryParams = $request->getQueryParams();
+        $query = $queryParams['q'] ?? null;
+
+        if (!is_string($query) || trim($query) === '') {
+            return $this->jsonResponse($response, ['error' => 'Missing q parameter'], 400);
+        }
+
+        $geoJson = $this->parcelService->searchParcelsAsGeoJson(trim($query));
+
+        if (empty($geoJson['features'])) {
+            return $this->jsonResponse($response, ['error' => 'Not found'], 404);
+        }
+
+        return $this->jsonResponse($response, $geoJson);
+    }
+
     private function jsonResponse(Response $response, mixed $data, int $status = 200): Response
     {
         $response->getBody()->write(json_encode($data, JSON_THROW_ON_ERROR));
