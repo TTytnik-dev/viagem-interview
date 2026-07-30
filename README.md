@@ -1,6 +1,6 @@
-# Viagem – Testovací úloha (Katastrální parcely)
+# Czech Cadastre Map
 
-Interaktivní webová aplikace pro zobrazení katastrálních parcel na mapě. Aplikace dynamicky načítá geometrie parcel podle aktuálního výřezu mapy (bounding box) a po kliknutí na parcelu zobrazuje její detaily. Projekt je postaven s důrazem na čistou architekturu a plynulý chod i při větším množství dat.
+Interaktivní webová aplikace pro zobrazení katastrálních parcel v České republice. Aplikace dynamicky načítá geometrie parcel podle aktuálního výřezu mapy (bounding box) a po kliknutí na parcelu zobrazuje její základní informace. Projekt je zaměřen na čistou architekturu, vysoký výkon a plynulé vykreslování většího množství geografických dat.
 
 ## Stack
 
@@ -19,7 +19,7 @@ Interaktivní webová aplikace pro zobrazení katastrálních parcel na mapě. A
 ## Struktura projektu
 
 ```text
-viagem-interview/
+czech-cadastre-map/
 ├── backend/               # PHP Slim 4 API
 │   ├── public/            # Vstupní bod (index.php)
 │   ├── src/
@@ -55,7 +55,7 @@ viagem-interview/
 ### Architektonická rozhodnutí
 
 - **Lokální SQLite databáze namísto live WFS:**  
-  Služba WFS ČÚZK má vyšší latenci a limity v počtu vrácených objektů. Pro zajištění plynulého chodu jsem se rozhodl data jednorázově stáhnout (pomocí QGIS / ogr2ogr), transformovat do EPSG:4326 a uložit lokálně.
+ Služba WFS ČÚZK má vyšší latenci a limity v počtu vrácených objektů. Proto jsou data jednorázově stažena, transformována do EPSG:4326 a uložena lokálně do SQLite databáze. Díky tomu může aplikace poskytovat velmi rychlé odpovědi na dotazy podle aktuálního výřezu mapy.
 
 - **Vlastní BBox indexace v SQLite:**  
   Abych se vyhnul složité kompilaci rozšíření SpatiaLite, implementoval jsem ruční bounding box indexaci. Tabulka obsahuje sloupce `min_x, max_x, min_y, max_y` se složeným indexem, což umožňuje SQLite vracet viditelné parcely v milisekundách.
@@ -71,13 +71,13 @@ viagem-interview/
     - **Modulární logiku mapy** (`parcelLayers.ts`, `parcelPopup.ts`, `parcelSelection.ts` - striktní rozdělení zodpovědností)
     - **API vrstvu** (`parcelApi.ts`)
 
-### Co mě překvapilo
+### Technické výzvy
 
 - Transformace souřadnicového systému (EPSG:5514 → WGS84) a parsování GML ze strany ČÚZK byla nejsložitější část přípravy dat.
 - Konfigurace MapLibre GL Web Workeru ve Vite vyžadovala úpravy v vite.config.ts.
 - Při spuštění download-and-import.sh se objevila chyba bad interpreter: /bin/bash^M: no such file or directory. Příčinou byly Windows (CRLF) konce řádků ve skriptu. Po převodu na LF skript funguje správně.
 
-### Co bych s více časem řešil jinak
+### Možná budoucí rozšíření
 
 - Stahování dat: Implementoval bych robustní CLI skript v PHP pro stahování a paginaci dat z WFS přímo do databáze, namísto závislosti na externích nástrojích (QGIS / ogr2ogr).
 - Vektorové dlaždice (Vector Tiles): Při přechodu na celou ČR bych opustil GeoJSON a servíroval data jako MVT (Mapbox Vector Tiles) generované na backendu.
@@ -153,4 +153,4 @@ http://localhost:5173
 
 ---
 
-Nyní byste měli vidět plně funkční aplikaci s mapou. Můžete mapu posouvat pro dynamické načítání dat, nebo využít vyhledávání v levém horním rohu pro rychlé nalezení konkrétní parcely (např. zadáním `314`). 
+Po spuštění aplikace bude dostupná interaktivní mapa s dynamickým načítáním parcel podle aktuálního výřezu mapy. Parcelu lze vyhledat podle čísla nebo vybrat kliknutím přímo na mapě, čímž se zobrazí její detail.
